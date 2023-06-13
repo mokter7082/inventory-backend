@@ -1,3 +1,4 @@
+const { query } = require("express");
 const { Product } = require("../models/Product.model");
 const productService = require("../services/product.service");
 
@@ -20,7 +21,11 @@ module.exports.saveProduct = async (req, res, next) => {
 
 module.exports.getProducts = async (req, res, next) => {
   try {
-    const products = await productService.getProductService();
+    const queries = {};
+    if (req.query.sort) {
+      queries.shortBy = req.query.sort.split(",").join(" ");
+    }
+    const products = await productService.getProductService({ queries });
     res.status(200).json({
       isSuccess: true,
       message: "Product are returned",
@@ -42,6 +47,25 @@ module.exports.updateProduct = async (req, res, next) => {
       isSuccess: true,
       message: "Update successfull",
       data: update,
+    });
+  } catch (error) {
+    res.send({
+      isSuccess: false,
+      error: error.message,
+      message: "Should not update product",
+    });
+  }
+};
+module.exports.deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const getProduct = await Product.findById({ _id: id });
+
+    const deleteProduct = await getProduct.deleteOne();
+    res.status(201).send({
+      isSuccess: true,
+      message: "delete successfull",
+      data: 1,
     });
   } catch (error) {
     res.send({
