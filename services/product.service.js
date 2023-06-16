@@ -2,7 +2,7 @@ const { Product } = require("../models/Product.model");
 
 module.exports.getProductService = async (queries) => {
   console.log(queries.shortBy);
-  const products = await Product.find({}).sort("name");
+  const products = await Product.find({}).sort(queries.queries.shortBy);
   return products;
 };
 module.exports.createProductService = async (data) => {

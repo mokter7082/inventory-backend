@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
-const productSchema = mongoose.Schema(
+
+const stockSchema = mongoose.Schema(
   {
+    productId: {
+      type: ObjectId,
+      required: true,
+      ref: "Product",
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -43,6 +49,16 @@ const productSchema = mongoose.Schema(
         },
       },
     ],
+    price: {
+      type: Number,
+      required: true,
+      min: [0, "Product price can't be negative"],
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: [0, "Product quantity can't be negative"],
+    },
     category: {
       type: String,
       required: true,
@@ -58,19 +74,36 @@ const productSchema = mongoose.Schema(
         required: true,
       },
     },
-
-    quantity: {
-      type: Number,
-      required: true,
-      validator: (value) => {
-        const isInteger = Number.isInteger(value);
-        if (isInteger) {
-          return true;
-        } else {
-          return false;
-        }
+    store: {
+      name: {
+        type: String,
+        required: [true, "Please provide a store name"],
+        trim: true,
+        maxLength: 100,
+        unique: true,
+        lowercase: true,
+        enum: {
+          values: ["Dhaka", "Chattogram", "Rajshahi", "Comilla"],
+          message: "{VALUE} is not valid name",
+        },
       },
-      message: "quantity must be integer",
+      id: {
+        type: ObjectId,
+        ref: "Store",
+        required: true,
+      },
+    },
+    suppliedBy: {
+      name: {
+        type: String,
+        required: [true, "Please provide a store name"],
+        trim: true,
+      },
+      id: {
+        type: ObjectId,
+        ref: "Supplier",
+        required: true,
+      },
     },
     status: {
       type: String,
@@ -85,4 +118,4 @@ const productSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports.Product = mongoose.model("Product", productSchema);
+exports.Stock = mongoose.model("Stock", stockSchema);

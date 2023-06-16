@@ -23,7 +23,9 @@ module.exports.getProducts = async (req, res, next) => {
   try {
     const queries = {};
     if (req.query.sort) {
-      queries.shortBy = req.query.sort.split(",").join(" ");
+      const shortBy = req.query.sort.split(",").join(" ");
+      // console.log("query", query);
+      queries.shortBy = shortBy;
     }
     const products = await productService.getProductService({ queries });
     res.status(200).json({
